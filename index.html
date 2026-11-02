@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WireframeStudio — local wireframe builder</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%2322262b'/%3E%3Crect x='3.5' y='3.5' width='9' height='9' rx='1' fill='none' stroke='%23fff' stroke-width='1.5'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+<header id="topbar">
+  <div class="tb-group brand">
+    <span class="brand-mark"></span>
+    <span class="brand-name">WireframeStudio</span>
+  </div>
+
+  <div class="tb-group" id="fileMenuWrap">
+    <button class="tb-btn" id="btnNew" title="New page from a template">New</button>
+    <div id="fileMenu" hidden>
+      <button data-tpl="blank">Blank page</button>
+      <button data-tpl="landing">Landing page</button>
+      <button data-tpl="shop">Product page</button>
+      <button data-tpl="blog">Blog post</button>
+      <button data-tpl="contact">Contact page</button>
+      <button data-tpl="mobile">Mobile page</button>
+    </div>
+  </div>
+
+  <div class="tb-group">
+    <button class="tb-btn" id="btnImport" title="Import a saved .json wireframe">Import</button>
+    <button class="tb-btn" id="btnExport" title="Save this wireframe as .json">Export JSON</button>
+    <button class="tb-btn" id="btnPng" title="Download a PNG snapshot of the page">Export PNG</button>
+  </div>
+
+  <span class="tb-sep"></span>
+
+  <div class="tb-group">
+    <button class="tb-btn icon" id="btnUndo" title="Undo (Ctrl+Z)"></button>
+    <button class="tb-btn icon" id="btnRedo" title="Redo (Ctrl+Y)"></button>
+  </div>
+
+  <div class="tb-group">
+    <button class="tb-btn icon" id="btnZoomOut" title="Zoom out (Ctrl+-)"></button>
+    <span id="zoomLabel">100%</span>
+    <button class="tb-btn icon" id="btnZoomIn" title="Zoom in (Ctrl++)"></button>
+  </div>
+
+  <div class="tb-group">
+    <button class="tb-btn icon toggle" id="btnGrid" title="Toggle grid (G)"></button>
+    <button class="tb-btn icon toggle" id="btnSnap" title="Snap to 8px grid (S)"></button>
+  </div>
+
+  <span class="tb-sep"></span>
+
+  <div class="tb-group devices">
+    <button class="tb-btn dev" data-w="1440">Desktop</button>
+    <button class="tb-btn dev" data-w="834">Tablet</button>
+    <button class="tb-btn dev" data-w="390">Mobile</button>
+    <label class="dim-label">W <input id="pageW" type="number" min="200" max="4000" step="10"></label>
+    <label class="dim-label">H <input id="pageH" type="number" min="300" max="8000" step="10"></label>
+  </div>
+
+  <div class="tb-group tb-right">
+    <span id="saveStatus" title="Your work is saved automatically in this browser"></span>
+    <button class="tb-btn icon" id="btnClear" title="Remove all elements"></button>
+    <button class="tb-btn icon" id="btnHelp" title="Help and shortcuts (?)"></button>
+  </div>
+</header>
+
+<aside id="sidebar">
+  <div id="paletteHead">
+    <input id="paletteSearch" type="search" placeholder="Search elements and sections&hellip;" autocomplete="off" spellcheck="false">
+  </div>
+  <div id="palette"></div>
+</aside>
+
+<main id="workspace">
+  <div id="spacer">
+    <div id="page">
+      <div id="pageContent">
+        <div id="elLayer"></div>
+        <div id="fxLayer"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div id="ctxToolbar" hidden></div>
+<div id="placeGhost" hidden></div>
+<div id="marquee" hidden></div>
+
+<div id="helpModal" hidden>
+  <div id="helpCard">
+    <button id="helpClose" title="Close">&times;</button>
+    <h1>WireframeStudio</h1>
+    <p class="sub">A fully local wireframe builder. Everything runs in this file &mdash; no server, no account.</p>
+    <div class="help-cols">
+      <div>
+        <h2>Building</h2>
+        <ul>
+          <li><b>Drag</b> an item from the left palette onto the page, anywhere you like.</li>
+          <li>Or <b>click</b> a palette item, then click on the page to place it. <kbd>Esc</kbd> cancels.</li>
+          <li><b>Double-click</b> any text inside an element to edit it.</li>
+          <li>Drag elements to move them; drag the corner handles to resize.</li>
+          <li><kbd>Shift</kbd>+click adds to the selection; drag empty canvas to marquee-select.</li>
+          <li><kbd>Alt</kbd>+drag an element to duplicate it.</li>
+        </ul>
+      </div>
+      <div>
+        <h2>Shortcuts</h2>
+        <ul>
+          <li><kbd>Del</kbd> delete &nbsp; <kbd>Ctrl+D</kbd> duplicate &nbsp; <kbd>Ctrl+C/V</kbd> copy/paste</li>
+          <li><kbd>Ctrl+Z / Ctrl+Y</kbd> undo / redo</li>
+          <li>Arrow keys nudge, <kbd>Shift</kbd>+arrows &times;10</li>
+          <li><kbd>[ / ]</kbd> send back / bring front</li>
+          <li><kbd>Ctrl+scroll</kbd> or <kbd>Ctrl +/-/0</kbd> zoom</li>
+          <li><kbd>G</kbd> grid &nbsp; <kbd>S</kbd> snap &nbsp; <kbd>Esc</kbd> deselect</li>
+        </ul>
+        <h2>Saving</h2>
+        <ul>
+          <li>Work autosaves to this browser (localStorage).</li>
+          <li><b>Export JSON</b> keeps a portable copy; <b>Import</b> reopens it.</li>
+          <li><b>Export PNG</b> downloads an image of the current page.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" hidden></div>
+<input type="file" id="fileInput" accept="application/json,.json" hidden>
+
+<script src="app.js"></script>
+</body>
+</html>
